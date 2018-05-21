@@ -559,24 +559,44 @@ def reset_password(user):
 
 def user_query(doctype, txt, searchfield, start, page_len, filters):
 	from frappe.desk.reportview import get_match_cond
-	txt = "%{}%".format(txt)
-	return frappe.db.sql("""select name, concat_ws(' ', first_name, middle_name, last_name)
+	# txt = "%{}%".format(txt)
+	# return frappe.db.sql("""select name, concat_ws(' ', first_name, middle_name, last_name)
+	# 	from `tabUser`
+	# 	where enabled=1
+	# 		and user_type = 'System User'
+	# 		and docstatus < 2
+	# 		and name not in ({standard_users})
+	# 		and ({key} like %s
+	# 			or concat_ws(' ', first_name, middle_name, last_name) like %s)
+	# 		{mcond}
+	# 	order by
+	# 		case when name like %s then 0 else 1 end,
+	# 		case when concat_ws(' ', first_name, middle_name, last_name) like %s
+	# 			then 0 else 1 end,
+	# 		name asc
+	# 	limit %s, %s""".format(standard_users=", ".join(["%s"]*len(STANDARD_USERS)),
+	# 		key=searchfield, mcond=get_match_cond(doctype)),
+	# 		tuple(list(STANDARD_USERS) + [txt, txt, txt, txt, start, page_len]))
+	fcond = """and `tabUser`.company in (select DISTINCT defvalue 
+			from tabDefaultValue where defkey = 'Company' and parent='""" + frappe.session.user + "')"
+	query = """select `tabUser`.name, `tabUser`.first_name, `tabUser`.last_name
 		from `tabUser`
-		where enabled=1
-			and user_type = 'System User'
-			and docstatus < 2
-			and name not in ({standard_users})
-			and ({key} like %s
-				or concat_ws(' ', first_name, middle_name, last_name) like %s)
-			{mcond}
+		where
+		   `tabUser`.`{key}` like '{txt}'
+			{fcond} {mcond}
 		order by
-			case when name like %s then 0 else 1 end,
-			case when concat_ws(' ', first_name, middle_name, last_name) like %s
-				then 0 else 1 end,
-			name asc
-		limit %s, %s""".format(standard_users=", ".join(["%s"]*len(STANDARD_USERS)),
-			key=searchfield, mcond=get_match_cond(doctype)),
-			tuple(list(STANDARD_USERS) + [txt, txt, txt, txt, start, page_len]))
+			`tabUser`.name desc
+		limit
+			{start}, {page_len}
+		""".format(
+			key=frappe.db.escape(searchfield),
+			fcond=fcond,
+			mcond=get_match_cond(doctype),
+			start=start,
+			page_len=page_len,
+			txt=frappe.db.escape('%{0}%'.format(txt)))
+
+	return frappe.db.sql(query)
 
 def get_total_users():
 	"""Returns total no. of system users"""

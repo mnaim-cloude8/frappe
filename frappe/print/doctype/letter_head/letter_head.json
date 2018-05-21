@@ -3,10 +3,12 @@
  "allow_import": 0, 
  "allow_rename": 1, 
  "autoname": "field:letter_head_name", 
+ "beta": 0, 
  "creation": "2012-11-22 17:45:46", 
  "custom": 0, 
  "docstatus": 0, 
  "doctype": "DocType", 
+ "editable_grid": 0, 
  "fields": [
   {
    "allow_on_submit": 0, 
@@ -148,14 +150,15 @@
  "hide_toolbar": 0, 
  "icon": "icon-font", 
  "idx": 1, 
+ "image_view": 0, 
  "in_create": 0, 
  "in_dialog": 0, 
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 3, 
- "modified": "2016-03-22 15:18:09.648844", 
- "modified_by": "Administrator", 
+ "modified": "2018-04-13 18:12:40.597476", 
+ "modified_by": "asneha@cloude8.com", 
  "module": "Print", 
  "name": "Letter Head", 
  "owner": "Administrator", 
@@ -201,7 +204,9 @@
    "write": 0
   }
  ], 
+ "quick_entry": 0, 
  "read_only": 0, 
  "read_only_onload": 0, 
- "sort_order": "ASC"
+ "sort_order": "ASC", 
+ "track_seen": 0
 }

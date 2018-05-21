@@ -36,7 +36,8 @@ def build_response(response_type=None):
 		'download': as_raw,
 		'json': as_json,
 		'page': as_page,
-		'redirect': redirect
+		'redirect': redirect,
+		'txt' : as_txt
 	}
 
 	return response_type_map[frappe.response.get('type') or response_type]()
@@ -168,3 +169,11 @@ def handle_session_stopped():
 	response.status_code = 503
 	response.content_type = 'text/html'
 	return response
+# generate txt file and return the response
+def as_txt():
+    response = Response()
+    response.mimetype = 'text/csv'
+    response.charset = 'utf-8'
+    response.headers[b"Content-Disposition"] = ("attachment; filename=\"%s.txt\"" % frappe.response['doctype'].replace(' ', '_')).encode("utf-8")
+    response.data = frappe.response['result']
+    return response
